@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="checkout_title">Checkout</string>
+    <string name="checkout_offline">You\'re offline. You can review your order, but not pay yet.</string>
+
+    <plurals name="checkout_item_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="checkout_cart_empty">Your cart is empty.</string>
+    <string name="checkout_cd_decrease">Decrease the quantity of %1$s</string>
+    <string name="checkout_cd_increase">Increase the quantity of %1$s</string>
+    <string name="checkout_cd_remove">Remove %1$s from the cart</string>
+
+    <string name="checkout_section_address">Deliver to</string>
+    <string name="checkout_address_line">%1$s, %2$s %3$s</string>
+    <string name="checkout_address_checking">Checking the address…</string>
+    <string name="checkout_address_deliverable">We deliver to this address.</string>
+
+    <string name="checkout_section_shipping">Shipping</string>
+    <plurals name="checkout_delivery_days">
+        <item quantity="one">Arrives in %d day</item>
+        <item quantity="other">Arrives in %d days</item>
+    </plurals>
+    <string name="checkout_free_for_members">Free for members</string>
+    <string name="checkout_free">Free</string>
+    <string name="checkout_shipping_unavailable">Shipping options appear once the cart has items and an address is chosen.</string>
+
+    <string name="checkout_promo_label">Promo code</string>
+    <string name="checkout_promo_applied">%1$s applied: −%2$s</string>
+
+    <string name="checkout_section_payment">Pay with</string>
+    <string name="checkout_card_label">%1$s •••• %2$s</string>
+
+    <string name="checkout_section_summary">Summary</string>
+    <string name="checkout_subtotal">Subtotal</string>
+    <string name="checkout_shipping">Shipping</string>
+    <string name="checkout_shipping_pending">Choose an option</string>
+    <string name="checkout_discount">Discount</string>
+    <string name="checkout_discount_amount">−%1$s</string>
+    <string name="checkout_pay_amount">Pay %1$s</string>
+
+    <string name="action_retry">Retry</string>
+    <string name="action_apply">Apply</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_ok">OK</string>
+
+    <string name="address_outside_area">We don\'t deliver to this address yet.</string>
+    <string name="address_incomplete">This address is missing details.</string>
+    <string name="address_po_box">We can\'t deliver to PO boxes.</string>
+
+    <string name="error_network">No connection. Check your network and try again.</string>
+    <string name="error_unauthorized">Your session expired. Please sign in again.</string>
+    <string name="error_not_found">That item is no longer available.</string>
+    <string name="error_promo_invalid">That code isn\'t valid.</string>
+    <string name="error_promo_expired">That code has expired.</string>
+    <string name="error_promo_minimum">Your order doesn\'t reach the minimum for this code.</string>
+    <string name="error_payment_declined">Your payment was declined. Try another card.</string>
+    <string name="error_payment_requires_action">Your bank needs you to confirm this payment.</string>
+    <string name="error_out_of_stock">Some items just sold out.</string>
+    <string name="error_price_changed">Prices changed. We\'ve updated your total; please review it.</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+
+    <string name="confirmation_title">Order placed</string>
+    <string name="confirmation_order_number">Order number %1$s</string>
+    <string name="confirmation_back_to_checkout">Back to checkout</string>
+</resources>
