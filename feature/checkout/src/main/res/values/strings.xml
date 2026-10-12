@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="checkout_item_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <plurals name="checkout_delivery_days">
+        <item quantity="one">Arrives in %d day</item>
+        <item quantity="other">Arrives in %d days</item>
+    </plurals>
+
+    <string name="checkout_offline">You\'re offline. You can review your order, but not pay yet.</string>
+    <string name="checkout_section_address">Deliver to</string>
+    <string name="checkout_section_shipping">Shipping</string>
+    <string name="checkout_section_payment">Pay with</string>
+    <string name="checkout_address_checking">Checking address…</string>
+    <string name="checkout_free_for_members">Free for members</string>
+    <string name="checkout_free">Free</string>
+    <string name="checkout_subtotal">Subtotal</string>
+    <string name="checkout_shipping">Shipping</string>
+    <string name="checkout_shipping_pending">Choose an option</string>
+    <string name="checkout_discount">Discount</string>
+    <string name="checkout_pay_amount">Pay %1$s</string>
+    <string name="checkout_promo_label">Promo code</string>
+    <string name="checkout_promo_applied">%1$s applied: −%2$s</string>
+
+    <string name="action_retry">Retry</string>
+    <string name="action_apply">Apply</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_ok">OK</string>
+
+    <string name="address_outside_area">We don\'t deliver to this address yet.</string>
+    <string name="address_incomplete">This address is missing details.</string>
+    <string name="address_po_box">We can\'t deliver to PO boxes.</string>
+
+    <string name="error_network">No connection. Check your network and try again.</string>
+    <string name="error_unauthorized">Your session expired. Please sign in again.</string>
+    <string name="error_not_found">That item is no longer available.</string>
+    <string name="error_promo_invalid">That code isn\'t valid.</string>
+    <string name="error_promo_expired">That code has expired.</string>
+    <string name="error_promo_minimum">Your order doesn\'t reach the minimum for this code.</string>
+    <string name="error_payment_declined">Your payment was declined. Try another method.</string>
+    <string name="error_payment_requires_action">Your bank needs you to confirm this payment.</string>
+    <string name="error_out_of_stock">Some items just sold out.</string>
+    <string name="error_price_changed">Prices changed. We\'ve updated your total; please review it.</string>
+    <string name="error_generic">Something went wrong. Please try again.</string>
+</resources>
