@@ -17,14 +17,15 @@ internal class ShippingReducer @Inject constructor() : CheckoutSliceReducer<Ship
 
         ShippingAction.RetryClicked -> state.requestQuotes()
 
-        // Quotes carry the address they were computed for, so quotes for a previous address are ignored.
+        // Quotes carry the address they were computed for, and they are ignored when that is a previous address or
+        // when nobody is waiting for them (for example the cart was emptied after the request went out).
         is ShippingAction.QuotesLoaded ->
-            if (action.addressId != state.address.selectedId) state.only()
+            if (action.addressId != state.address.selectedId || state.shipping.quotes !is Loadable.Loading) state.only()
             else state.copy(shipping = state.shipping.copy(quotes = Loadable.Ready(action.options))).only()
                 .then { it.reconcileShippingSelection() }
 
         is ShippingAction.QuotesFailed ->
-            if (action.addressId != state.address.selectedId) state.only()
+            if (action.addressId != state.address.selectedId || state.shipping.quotes !is Loadable.Loading) state.only()
             else state.copy(shipping = state.shipping.copy(quotes = Loadable.Failed(action.error))).only()
     }
 }

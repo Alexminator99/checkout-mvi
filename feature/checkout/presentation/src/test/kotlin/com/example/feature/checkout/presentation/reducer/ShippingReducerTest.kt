@@ -75,6 +75,20 @@ class ShippingReducerTest {
     }
 
     @Test
+    fun `quotes arriving when none were requested are ignored`() {
+        val idle = readyState().copy(shipping = ShippingSlice())
+
+        assertEquals(idle, reducer.reduce(idle, ShippingAction.QuotesLoaded(HOME.id, quotes)).state)
+    }
+
+    @Test
+    fun `failed quotes arriving when none were requested are ignored`() {
+        val idle = readyState().copy(shipping = ShippingSlice())
+
+        assertEquals(idle, reducer.reduce(idle, ShippingAction.QuotesFailed(HOME.id, CheckoutError.Network)).state)
+    }
+
+    @Test
     fun `failed quotes for the current address are shown`() {
         val loading = readyState().copy(shipping = ShippingSlice(Loadable.Loading))
 
