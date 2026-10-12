@@ -13,6 +13,10 @@ import java.util.Currency
  */
 class Money(amount: BigDecimal, val currency: Currency) : Comparable<Money> {
 
+    init {
+        require(currency.defaultFractionDigits >= 0) { "Currency ${currency.currencyCode} has no minor unit" }
+    }
+
     val amount: BigDecimal = amount.setScale(currency.defaultFractionDigits, RoundingMode.HALF_EVEN)
 
     val minorUnits: Long get() = amount.movePointRight(currency.defaultFractionDigits).longValueExact()

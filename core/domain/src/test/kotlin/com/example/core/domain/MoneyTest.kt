@@ -56,4 +56,11 @@ class MoneyTest {
         assertTrue(Money.zero(eur).isZero)
         assertFalse(Money.of("0.01", "EUR").isZero)
     }
+
+    @Test
+    fun `currencies without a minor unit are rejected`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            Money.of("5", "XXX")
+        }
+    }
 }
