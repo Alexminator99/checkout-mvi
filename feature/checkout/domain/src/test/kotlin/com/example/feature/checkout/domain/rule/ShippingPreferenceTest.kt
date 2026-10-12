@@ -12,7 +12,7 @@ import org.junit.Test
 
 class ShippingPreferenceTest {
 
-    private val options = listOf(STANDARD, PICKUP, EXPRESS)
+    private val options = listOf(PICKUP, STANDARD, EXPRESS)
 
     @Test
     fun `keeps the current choice while it is still offered`() {
