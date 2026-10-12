@@ -25,6 +25,7 @@ rootProject.name = "checkout-mvi"
 //     │              │        │
 //     │              │        └──► :core:mvi
 //     │              └──► :core:ui ──► :core:domain
+//     ├──► :core:ui
 //     └──► :feature:checkout:data ──► :feature:checkout:domain
 //
 // Presentation never sees data. Only :app knows both, so only :app assembles the Hilt graph.
