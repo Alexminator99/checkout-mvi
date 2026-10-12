@@ -8,6 +8,10 @@ class LocaleMoneyFormatter(private val locale: () -> Locale = Locale::getDefault
 
     override fun format(money: Money): String =
         NumberFormat.getCurrencyInstance(locale())
-            .apply { currency = money.currency }
+            .apply {
+                currency = money.currency
+                minimumFractionDigits = money.currency.defaultFractionDigits
+                maximumFractionDigits = money.currency.defaultFractionDigits
+            }
             .format(money.amount)
 }
