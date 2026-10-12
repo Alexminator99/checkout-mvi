@@ -19,6 +19,14 @@ import com.example.core.ui.theme.ShopTheme
 import com.example.feature.checkout.presentation.ui.model.SelectableRowUi
 import com.example.feature.checkout.presentation.ui.preview.CheckoutPreviewData
 
+// The radio button is not clickable on its own, so it gets no minimum touch target:
+// its 20.dp icon plus 2.dp of padding on each side.
+private val RadioButtonWidth = 24.dp
+private val RadioButtonToTextSpacing = 12.dp
+
+/** Where a row's text column starts, for content that belongs under the text rather than under the radio button. */
+internal val SelectableRowTextInset = RadioButtonWidth + RadioButtonToTextSpacing
+
 @Composable
 fun SelectableRow(row: SelectableRowUi, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
@@ -29,7 +37,7 @@ fun SelectableRow(row: SelectableRowUi, onClick: () -> Unit, modifier: Modifier 
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = row.selected, onClick = null, enabled = row.enabled)
-        Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
+        Column(modifier = Modifier.weight(1f).padding(start = RadioButtonToTextSpacing)) {
             Text(text = row.title.asString(), style = MaterialTheme.typography.bodyLarge)
             row.subtitle?.let { subtitle ->
                 Text(

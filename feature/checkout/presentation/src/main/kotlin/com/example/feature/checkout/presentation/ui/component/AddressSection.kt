@@ -2,6 +2,7 @@ package com.example.feature.checkout.presentation.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,26 +25,33 @@ fun AddressSection(
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
         SectionHeader(text = stringResource(R.string.checkout_section_address))
-        address.rows.forEach { row -> SelectableRow(row = row, onClick = { onSelect(row.id) }) }
-        AddressStatus(status = address.status)
+        address.rows.forEach { row ->
+            SelectableRow(row = row, onClick = { onSelect(row.id) })
+            if (row.selected) {
+                AddressStatus(status = address.status, modifier = Modifier.padding(start = SelectableRowTextInset))
+            }
+        }
     }
 }
 
 @Composable
-private fun AddressStatus(status: AddressStatusUi) {
+private fun AddressStatus(status: AddressStatusUi, modifier: Modifier = Modifier) {
     when (status) {
         AddressStatusUi.None -> Unit
         AddressStatusUi.Checking -> Text(
             text = stringResource(R.string.checkout_address_checking),
+            modifier = modifier,
             style = MaterialTheme.typography.bodySmall,
         )
         AddressStatusUi.Deliverable -> Text(
             text = stringResource(R.string.checkout_address_deliverable),
+            modifier = modifier,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
         )
         is AddressStatusUi.Warning -> Text(
             text = status.message.asString(),
+            modifier = modifier,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.error,
         )
