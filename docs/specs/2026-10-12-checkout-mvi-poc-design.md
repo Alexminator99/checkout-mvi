@@ -146,10 +146,17 @@ These are the parts that made the prototype hard to follow, and how each is fixe
   | Activity Compose | 1.13.0 |
   | kotlinx-serialization / kotlinx-coroutines | 1.11.0 / 1.11.0 |
   | Turbine | 1.2.1 |
-  | compileSdk / targetSdk / minSdk | 36 / 36 / 26 |
+  | compileSdk / targetSdk / minSdk | 37 / 36 / 26 |
 
-  The current Hilt Gradle plugin requires AGP 9, so these move together.
-- **Fallback, decided now:** if that toolchain is not green by the end of the first implementation task, the POC uses the set already verified on this machine (AGP 8.9.1, Kotlin 2.1.20, KSP 2.1.20-2.0.0, Hilt 2.56.1, Compose BOM 2025.04.01). The upgrade then becomes a follow-up.
+  - The current Hilt Gradle plugin requires AGP 9, so these versions move together.
+  - The latest AndroidX libraries require compiling against API 37.
+  - Before planning, a throwaway project with these convention plugins built and ran its tests on this machine. It covered:
+    - an `internal` Hilt ViewModel
+    - `hiltViewModel()`
+    - type-safe navigation
+    - shared test fakes
+    - Turbine
+    - the Gradle configuration cache
 
 ## 5. Domain — `:core:domain` and `:feature:checkout:domain`
 
@@ -158,8 +165,9 @@ These are the parts that made the prototype hard to follow, and how each is fixe
 - `Money`: value object.
   - Arithmetic across currencies fails fast.
   - Amounts are normalised to the currency's scale on construction, so two equal amounts are equal regardless of how they were written (fixes the `BigDecimal` scale issue).
+  - `Money.ofMinor(...)` and `minorUnits` convert to and from integer minor units (cents), which is how the backend sends amounts.
 - `Outcome<out T, out E>`: the result type, generic over the error.
-  - `Success(value)` / `Failure(error)`, with `map`, `fold`, `onSuccess`, `onFailure`.
+  - `Success(value)` / `Failure(error)`, with `map` and `fold`.
   - It is generic because a sealed error hierarchy cannot span modules: each feature owns its errors.
 
 ### 5.2 Checkout errors
@@ -176,6 +184,8 @@ These are the parts that made the prototype hard to follow, and how each is fixe
 ### 5.3 Models
 
 One file each: `Cart`, `CartLine`, `Address`, `AddressValidation`, `ShippingOption`, `Promo`, `PaymentMethod`, `Customer`, `Order`, `OrderRequest`, `OrderTotals`, `CheckoutContext`, `FeatureFlag`.
+
+`Address` gains a `label` (Home, Office…) so the address list can tell addresses with the same recipient apart.
 
 `OrderRequest` gains `checkoutId`. That makes the idempotency key unique per checkout but stable across retries of the same request. It fixes the prototype bug where two identical orders placed on different days collided.
 
@@ -347,7 +357,7 @@ Fakes only. JUnit 4, `kotlinx-coroutines-test` and Turbine.
 | `:core:mvi` | `Store`: actions reduced in order, keyed effects latest-wins, results dispatched back, events delivered once. The store runs on a scope driven by the test scheduler, never `backgroundScope` with `advanceUntilIdle()`. That combination is why the prototype's 7 store tests failed with the real library. |
 | `:core:domain` | `Money` arithmetic, scale normalisation and currency mismatch. |
 | `:feature:checkout:domain` | One test class per use case and per rule file. |
-| `:feature:checkout:data` | Repositories over a fake remote data source: DTO mapping, error-code mapping, idempotency key stability. |
+| `:feature:checkout:data` | `safeCall` error mapping, and each repository over the demo data sources with zero latency: DTO mapping, every scripted error code, idempotency key stability. |
 | `:feature:checkout:presentation` | One test class per slice reducer (pure, no coroutines), one per section projector, the effect handler with fake repositories, and `CheckoutViewModel` end to end with `Dispatchers.setMain` and Turbine. The end-to-end flows: start → ready, quantity change → re-quote, apply promo, place order → navigation event, declined card → blocking dialog. |
 
 - Fakes for the domain's repository interfaces live in the domain module's `testFixtures`, one fake per file.
