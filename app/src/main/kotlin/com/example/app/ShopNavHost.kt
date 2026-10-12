@@ -28,6 +28,7 @@ fun ShopNavHost(
             onBackToCheckout = {
                 // A fresh checkout gets a new checkout id, so the next order is a new order.
                 navController.navigate(CheckoutDestination) {
+                    launchSingleTop = true
                     popUpTo<OrderConfirmationDestination> { inclusive = true }
                 }
             },
