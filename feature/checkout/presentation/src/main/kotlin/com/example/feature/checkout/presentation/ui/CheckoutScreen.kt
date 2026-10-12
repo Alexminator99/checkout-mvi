@@ -3,7 +3,9 @@ package com.example.feature.checkout.presentation.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
@@ -85,7 +87,7 @@ fun CheckoutScreen(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(modifier = modifier, snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding()) {
             when (state) {
                 CheckoutUiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 is CheckoutUiState.Error -> ErrorState(
@@ -105,27 +107,27 @@ private fun CheckoutContent(state: CheckoutUiState.Content, onIntent: (CheckoutI
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        item { Text(text = stringResource(R.string.checkout_title), style = MaterialTheme.typography.headlineMedium) }
+        item(key = "title") { Text(text = stringResource(R.string.checkout_title), style = MaterialTheme.typography.headlineMedium) }
         if (state.isOffline) {
-            item { OfflineBanner() }
+            item(key = "offline") { OfflineBanner() }
         }
-        item {
+        item(key = "cart") {
             CartSection(
                 cart = state.cart,
                 onQuantityChange = { sku, quantity -> onIntent(CartAction.QuantityChanged(sku, quantity)) },
             )
         }
-        item {
+        item(key = "address") {
             AddressSection(address = state.address, onSelect = { onIntent(AddressAction.Selected(it)) })
         }
-        item {
+        item(key = "shipping") {
             ShippingSection(
                 shipping = state.shipping,
                 onSelect = { onIntent(ShippingAction.Selected(it)) },
                 onRetry = { onIntent(ShippingAction.RetryClicked) },
             )
         }
-        item {
+        item(key = "promo") {
             PromoSection(
                 promo = state.promo,
                 onInputChange = { onIntent(PromoAction.InputChanged(it)) },
@@ -133,11 +135,11 @@ private fun CheckoutContent(state: CheckoutUiState.Content, onIntent: (CheckoutI
                 onRemove = { onIntent(PromoAction.RemoveClicked) },
             )
         }
-        item {
+        item(key = "payment") {
             PaymentSection(payment = state.payment, onSelect = { onIntent(PaymentAction.Selected(it)) })
         }
-        item { SummarySection(summary = state.summary) }
-        item {
+        item(key = "summary") { SummarySection(summary = state.summary) }
+        item(key = "pay") {
             PlaceOrderButton(button = state.placeOrder, onClick = { onIntent(OrderAction.PlaceClicked) })
         }
     }
