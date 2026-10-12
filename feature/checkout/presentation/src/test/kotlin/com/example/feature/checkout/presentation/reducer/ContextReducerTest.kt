@@ -3,6 +3,7 @@ package com.example.feature.checkout.presentation.reducer
 import com.example.feature.checkout.domain.error.CheckoutError
 import com.example.feature.checkout.domain.fixture.EXPRESS
 import com.example.feature.checkout.domain.fixture.HOME
+import com.example.feature.checkout.domain.fixture.MASTERCARD
 import com.example.feature.checkout.domain.fixture.MUG
 import com.example.feature.checkout.domain.fixture.OFFICE
 import com.example.feature.checkout.domain.fixture.PICKUP
@@ -118,6 +119,23 @@ class ContextReducerTest {
             listOf(CheckoutEffect.LoadShippingQuotes(HOME.id, newCart)),
             transition.effects.filterIsInstance<CheckoutEffect.LoadShippingQuotes>(),
         )
+    }
+
+    @Test
+    fun `a connectivity change keeps every choice and asks for nothing`() {
+        val start = readyState().copy(
+            address = AddressSlice(OFFICE.id, Loadable.Ready(AddressValidation.Deliverable)),
+            shipping = readyState().shipping.copy(selectedId = EXPRESS.id),
+            promo = PromoSlice("SAVE5", PromoStatus.Applied(SAVE5)),
+            selectedPaymentId = MASTERCARD.id,
+        )
+        val offline = checkoutContext(isOnline = false)
+
+        val transition = reducer.reduce(start, ContextAction.Updated(offline))
+
+        assertEquals(start.copy(context = Loadable.Ready(offline)), transition.state)
+        assertTrue(transition.effects.isEmpty())
+        assertTrue(transition.events.isEmpty())
     }
 
     @Test

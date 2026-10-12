@@ -1,5 +1,6 @@
 package com.example.feature.checkout.presentation.contract
 
+import com.example.feature.checkout.domain.error.CheckoutError
 import com.example.feature.checkout.domain.fixture.EXPRESS
 import com.example.feature.checkout.domain.fixture.HOME
 import com.example.feature.checkout.domain.fixture.PICKUP
@@ -25,9 +26,19 @@ class CheckoutSelectorsTest {
 
     @Test
     fun `an applied promo is sent with the order`() {
-        val state = readyState().copy(promo = PromoSlice("SAVE5", PromoStatus.Applied(SAVE5)))
+        val state = readyState().copy(promo = PromoSlice(" save5 ", PromoStatus.Applied(SAVE5)))
 
         assertEquals("SAVE5", state.orderRequestOrNull()?.promoCode)
+    }
+
+    @Test
+    fun `a rejected promo does not stop the order and is not sent`() {
+        val rejected = PromoSlice("BIG50", PromoStatus.Rejected(CheckoutError.Promo.MinimumNotReached))
+
+        assertEquals(
+            OrderRequest(CHECKOUT_ID, HOME.id, STANDARD.id, VISA.id, promoCode = null),
+            readyState().copy(promo = rejected).orderRequestOrNull(),
+        )
     }
 
     @Test
