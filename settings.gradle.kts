@@ -1,26 +1,32 @@
 pluginManagement {
-    repositories { google(); mavenCentral(); gradlePluginPortal() }
+    includeBuild("build-logic")
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories { google(); mavenCentral() }
+    repositories {
+        google()
+        mavenCentral()
+    }
 }
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "checkout-mvi"
 
 // Dependency rule, enforced by the module graph:
 //
-//   :app ──► :feature:checkout ──► :core:ui ──► :core:mvi
-//     │              │                 │
-//     │              └───────┬─────────┘
-//     │                      ▼
-//     └──► :data ────────► :domain  (pure Kotlin, depends on nothing but coroutines + javax.inject)
+//   :app ──► :feature:checkout:presentation ──► :feature:checkout:domain ──► :core:domain
+//     │              │        │
+//     │              │        └──► :core:mvi
+//     │              └──► :core:ui ──► :core:domain
+//     └──► :feature:checkout:data ──► :feature:checkout:domain
 //
-// :feature:checkout cannot see :data. Only :app knows both, so only :app assembles the Hilt graph.
+// Presentation never sees data. Only :app knows both, so only :app assembles the Hilt graph.
 
-include(":app")
 include(":core:mvi")
-include(":core:ui")
-include(":domain")
-include(":data")
-include(":feature:checkout")

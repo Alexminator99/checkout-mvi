@@ -1,13 +1,7 @@
-// Pure Kotlin: no Android, no DI framework. The MVI loop is testable on the JVM.
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.shop.jvm.library)
 }
-
-kotlin { jvmToolchain(17) }
 
 dependencies {
     api(libs.kotlinx.coroutines.core)
-
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
 }

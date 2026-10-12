@@ -3,24 +3,11 @@ package com.example.core.mvi
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Executes an effect and reports results back as actions.
+ * Runs an effect and reports its results back as actions.
  *
- * - One-shot work (a request) -> a Flow that emits one action.
- * - Subscriptions (observe a repository) -> a long-lived Flow.
- * - Fire-and-forget -> an empty Flow.
- *
- * Handlers must translate failures into actions; an exception escaping the Flow
- * is treated as a programming error and is not swallowed by the store.
+ * One-shot work emits one action, a subscription keeps emitting, fire-and-forget emits nothing.
+ * Failures must be translated into actions: an exception escaping the flow is a bug.
  */
-fun interface EffectHandler<E, A> {
-    fun handle(effect: E): Flow<A>
-}
-
-/**
- * Concurrency policy, declared on the effect itself so the reducer stays in charge:
- * launching an effect whose [cancelKey] matches a running one cancels the old one
- * (latest-wins). Typical use: search-as-you-type, re-quoting, re-subscribing.
- */
-interface KeyedEffect {
-    val cancelKey: Any
+fun interface EffectHandler<Effect, Action> {
+    fun handle(effect: Effect): Flow<Action>
 }
