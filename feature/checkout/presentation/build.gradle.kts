@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(projects.feature.checkout.domain)
+    implementation(libs.androidx.activity.compose)
 
     testImplementation(testFixtures(projects.feature.checkout.domain))
 }

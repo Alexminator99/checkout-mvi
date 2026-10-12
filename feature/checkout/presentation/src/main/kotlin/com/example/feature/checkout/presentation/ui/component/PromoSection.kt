@@ -49,7 +49,7 @@ fun PromoSection(
                 keyboardActions = KeyboardActions(onDone = { onApply() }),
             )
             if (promo.applied != null) {
-                TextButton(onClick = onRemove) { Text(text = stringResource(R.string.action_remove)) }
+                TextButton(onClick = onRemove, enabled = promo.removeEnabled) { Text(text = stringResource(R.string.action_remove)) }
             } else {
                 TextButton(onClick = onApply, enabled = promo.applyEnabled) {
                     if (promo.isRedeeming) {

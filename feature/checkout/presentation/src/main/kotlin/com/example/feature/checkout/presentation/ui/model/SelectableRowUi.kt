@@ -8,4 +8,5 @@ data class SelectableRowUi(
     val subtitle: UiText?,
     val trailing: UiText?,
     val selected: Boolean,
+    val enabled: Boolean,
 )

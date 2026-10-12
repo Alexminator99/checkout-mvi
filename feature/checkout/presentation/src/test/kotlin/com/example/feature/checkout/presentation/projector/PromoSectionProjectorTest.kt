@@ -7,6 +7,7 @@ import com.example.feature.checkout.presentation.R
 import com.example.feature.checkout.presentation.TestMoneyFormatter
 import com.example.feature.checkout.presentation.contract.PromoSlice
 import com.example.feature.checkout.presentation.contract.PromoStatus
+import com.example.feature.checkout.presentation.contract.Submission
 import com.example.feature.checkout.presentation.readyCheckout
 import com.example.feature.checkout.presentation.readyState
 import org.junit.Assert.assertEquals
@@ -39,6 +40,16 @@ class PromoSectionProjectorTest {
 
         assertFalse(ui.inputEnabled)
         assertTrue(ui.isRedeeming)
+    }
+
+    @Test
+    fun `the field and both buttons are locked while the order is being placed`() {
+        val slice = PromoSlice(input = "SAVE5")
+        val idle = promo(slice)
+        val placing = projector.project(readyCheckout(readyState().copy(promo = slice, submission = Submission.Submitting)))
+
+        assertEquals(listOf(true, true, true), listOf(idle.inputEnabled, idle.applyEnabled, idle.removeEnabled))
+        assertEquals(listOf(false, false, false), listOf(placing.inputEnabled, placing.applyEnabled, placing.removeEnabled))
     }
 
     @Test

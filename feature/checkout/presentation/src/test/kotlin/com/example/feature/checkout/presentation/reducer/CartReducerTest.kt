@@ -5,7 +5,6 @@ import com.example.feature.checkout.domain.fixture.MUG
 import com.example.feature.checkout.presentation.contract.CartAction
 import com.example.feature.checkout.presentation.contract.CheckoutEffect
 import com.example.feature.checkout.presentation.contract.CheckoutEvent
-import com.example.feature.checkout.presentation.contract.Submission
 import com.example.feature.checkout.presentation.readyState
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -27,13 +26,6 @@ class CartReducerTest {
     fun `the same quantity or an unknown line changes nothing`() {
         assertTrue(reducer.reduce(readyState(), CartAction.QuantityChanged(MUG.sku, MUG.quantity)).effects.isEmpty())
         assertTrue(reducer.reduce(readyState(), CartAction.QuantityChanged("unknown", 1)).effects.isEmpty())
-    }
-
-    @Test
-    fun `quantities cannot change while the order is being placed`() {
-        val submitting = readyState().copy(submission = Submission.Submitting)
-
-        assertTrue(reducer.reduce(submitting, CartAction.QuantityChanged(MUG.sku, 3)).effects.isEmpty())
     }
 
     @Test

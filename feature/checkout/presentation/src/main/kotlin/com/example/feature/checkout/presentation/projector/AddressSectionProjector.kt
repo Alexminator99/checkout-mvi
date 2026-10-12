@@ -4,6 +4,7 @@ import com.example.core.ui.UiText
 import com.example.feature.checkout.domain.model.AddressValidation
 import com.example.feature.checkout.presentation.R
 import com.example.feature.checkout.presentation.contract.Loadable
+import com.example.feature.checkout.presentation.contract.isPlacingOrder
 import com.example.feature.checkout.presentation.ui.model.AddressSectionUi
 import com.example.feature.checkout.presentation.ui.model.AddressStatusUi
 import com.example.feature.checkout.presentation.ui.model.SelectableRowUi
@@ -21,6 +22,7 @@ internal class AddressSectionProjector @Inject constructor() {
                     subtitle = UiText.res(R.string.checkout_address_line, address.line1, address.postalCode, address.city),
                     trailing = null,
                     selected = address.id == slice.selectedId,
+                    enabled = !ready.state.isPlacingOrder,
                 )
             },
             status = when (val validation = slice.validation) {

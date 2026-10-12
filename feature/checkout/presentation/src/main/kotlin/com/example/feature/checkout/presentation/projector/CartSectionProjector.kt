@@ -4,7 +4,7 @@ import com.example.core.ui.MoneyFormatter
 import com.example.core.ui.UiText
 import com.example.feature.checkout.domain.rule.MAX_QUANTITY_PER_LINE
 import com.example.feature.checkout.presentation.R
-import com.example.feature.checkout.presentation.contract.Submission
+import com.example.feature.checkout.presentation.contract.isPlacingOrder
 import com.example.feature.checkout.presentation.ui.model.CartLineUi
 import com.example.feature.checkout.presentation.ui.model.CartSectionUi
 import javax.inject.Inject
@@ -13,7 +13,7 @@ internal class CartSectionProjector @Inject constructor(private val money: Money
 
     fun project(ready: ReadyCheckout): CartSectionUi {
         val cart = ready.context.cart
-        val editable = ready.state.submission != Submission.Submitting
+        val editable = !ready.state.isPlacingOrder
         return CartSectionUi(
             title = UiText.plural(R.plurals.checkout_item_count, cart.itemCount, cart.itemCount),
             lines = cart.lines.map { line ->

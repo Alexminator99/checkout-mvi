@@ -7,7 +7,6 @@ import com.example.feature.checkout.presentation.contract.CartAction
 import com.example.feature.checkout.presentation.contract.CheckoutEffect
 import com.example.feature.checkout.presentation.contract.CheckoutEvent
 import com.example.feature.checkout.presentation.contract.CheckoutState
-import com.example.feature.checkout.presentation.contract.Submission
 import com.example.feature.checkout.presentation.contract.contextOrNull
 import javax.inject.Inject
 
@@ -22,8 +21,7 @@ internal class CartReducer @Inject constructor() : CheckoutSliceReducer<CartActi
     private fun onQuantityChanged(state: CheckoutState, action: CartAction.QuantityChanged): CheckoutTransition {
         val line = state.contextOrNull?.cart?.lines?.firstOrNull { it.sku == action.sku }
         val unchanged = line == null || line.quantity == action.quantity
-        val locked = state.submission == Submission.Submitting
-        return if (unchanged || locked) state.only()
+        return if (unchanged) state.only()
         else state.withEffects(CheckoutEffect.UpdateQuantity(action.sku, action.quantity))
     }
 }

@@ -12,6 +12,7 @@ import com.example.feature.checkout.presentation.TestMoneyFormatter
 import com.example.feature.checkout.presentation.contract.CheckoutState
 import com.example.feature.checkout.presentation.contract.Loadable
 import com.example.feature.checkout.presentation.contract.ShippingSlice
+import com.example.feature.checkout.presentation.contract.Submission
 import com.example.feature.checkout.presentation.readyCheckout
 import com.example.feature.checkout.presentation.readyState
 import com.example.feature.checkout.presentation.ui.model.ShippingSectionUi
@@ -47,6 +48,15 @@ class ShippingSectionProjectorTest {
         val rows = options(readyState(checkoutContext(isExpressShippingEnabled = false))).rows
 
         assertEquals(listOf(STANDARD.id, PICKUP.id), rows.map { it.id })
+    }
+
+    @Test
+    fun `no option can be picked while the order is being placed`() {
+        val idle = options(readyState()).rows
+        val placing = options(readyState().copy(submission = Submission.Submitting)).rows
+
+        assertEquals(setOf(true), idle.map { it.enabled }.toSet())
+        assertEquals(setOf(false), placing.map { it.enabled }.toSet())
     }
 
     @Test

@@ -29,8 +29,8 @@ internal object CheckoutPreviewData {
 
     val address = AddressSectionUi(
         rows = listOf(
-            SelectableRowUi("home", UiText.Raw("Home"), UiText.Raw("Calle Larios 1, 29005 Málaga"), trailing = null, selected = true),
-            SelectableRowUi("office", UiText.Raw("Office"), UiText.Raw("Av. de Andalucía 10, 29007 Málaga"), trailing = null, selected = false),
+            SelectableRowUi("home", UiText.Raw("Home"), UiText.Raw("Calle Larios 1, 29005 Málaga"), trailing = null, selected = true, enabled = true),
+            SelectableRowUi("office", UiText.Raw("Office"), UiText.Raw("Av. de Andalucía 10, 29007 Málaga"), trailing = null, selected = false, enabled = true),
         ),
         status = AddressStatusUi.Deliverable,
     )
@@ -43,6 +43,7 @@ internal object CheckoutPreviewData {
                 subtitle = UiText.plural(R.plurals.checkout_delivery_days, 3, 3),
                 trailing = UiText.res(R.string.checkout_free_for_members),
                 selected = true,
+                enabled = true,
             ),
             SelectableRowUi(
                 id = "express",
@@ -50,6 +51,7 @@ internal object CheckoutPreviewData {
                 subtitle = UiText.plural(R.plurals.checkout_delivery_days, 1, 1),
                 trailing = UiText.Raw("€12.99"),
                 selected = false,
+                enabled = true,
             ),
         ),
     )
@@ -58,6 +60,7 @@ internal object CheckoutPreviewData {
         input = "SAVE5",
         inputEnabled = true,
         applyEnabled = true,
+        removeEnabled = true,
         isRedeeming = false,
         applied = null,
         error = null,
@@ -65,8 +68,8 @@ internal object CheckoutPreviewData {
 
     val payment = PaymentSectionUi(
         rows = listOf(
-            SelectableRowUi("visa", UiText.res(R.string.checkout_card_label, "Visa", "4242"), subtitle = null, trailing = null, selected = true),
-            SelectableRowUi("mastercard", UiText.res(R.string.checkout_card_label, "Mastercard", "0002"), subtitle = null, trailing = null, selected = false),
+            SelectableRowUi("visa", UiText.res(R.string.checkout_card_label, "Visa", "4242"), subtitle = null, trailing = null, selected = true, enabled = true),
+            SelectableRowUi("mastercard", UiText.res(R.string.checkout_card_label, "Mastercard", "0002"), subtitle = null, trailing = null, selected = false, enabled = true),
         ),
     )
 

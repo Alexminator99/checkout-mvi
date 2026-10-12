@@ -7,6 +7,7 @@ import com.example.feature.checkout.domain.model.AddressValidation
 import com.example.feature.checkout.presentation.R
 import com.example.feature.checkout.presentation.contract.AddressSlice
 import com.example.feature.checkout.presentation.contract.Loadable
+import com.example.feature.checkout.presentation.contract.Submission
 import com.example.feature.checkout.presentation.readyCheckout
 import com.example.feature.checkout.presentation.readyState
 import com.example.feature.checkout.presentation.ui.model.AddressStatusUi
@@ -29,9 +30,17 @@ class AddressSectionProjectorTest {
                 subtitle = UiText.res(R.string.checkout_address_line, HOME.line1, HOME.postalCode, HOME.city),
                 trailing = null,
                 selected = true,
+                enabled = true,
             ),
             home,
         )
+    }
+
+    @Test
+    fun `no address can be picked while the order is being placed`() {
+        val rows = projector.project(readyCheckout(readyState().copy(submission = Submission.Submitting))).rows
+
+        assertEquals(setOf(false), rows.map { it.enabled }.toSet())
     }
 
     @Test

@@ -24,11 +24,11 @@ fun SelectableRow(row: SelectableRowUi, onClick: () -> Unit, modifier: Modifier 
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .selectable(selected = row.selected, onClick = onClick, role = Role.RadioButton)
+            .selectable(selected = row.selected, enabled = row.enabled, onClick = onClick, role = Role.RadioButton)
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        RadioButton(selected = row.selected, onClick = null)
+        RadioButton(selected = row.selected, onClick = null, enabled = row.enabled)
         Column(modifier = Modifier.weight(1f).padding(start = 12.dp)) {
             Text(text = row.title.asString(), style = MaterialTheme.typography.bodyLarge)
             row.subtitle?.let { subtitle ->

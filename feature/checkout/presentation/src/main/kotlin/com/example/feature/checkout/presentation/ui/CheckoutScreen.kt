@@ -1,5 +1,6 @@
 package com.example.feature.checkout.presentation.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -102,6 +103,9 @@ fun CheckoutScreen(
 
 @Composable
 private fun CheckoutContent(state: CheckoutUiState.Content, onIntent: (CheckoutIntent) -> Unit) {
+    // Leaving now would abandon the payment in flight, so Back does nothing until the order is answered.
+    BackHandler(enabled = state.placeOrder.loading) {}
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
