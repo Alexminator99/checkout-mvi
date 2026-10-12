@@ -63,6 +63,17 @@ class ContextReducerTest {
     }
 
     @Test
+    fun `a cart change while a promo is being checked checks it again for the new cart`() {
+        val start = readyState().copy(promo = PromoSlice(input = "BIG50", status = PromoStatus.Redeeming("BIG50")))
+        val newCart = cartOf(MUG, TEE)
+
+        val transition = reducer.reduce(start, ContextAction.Updated(checkoutContext(cart = newCart)))
+
+        assertTrue(CheckoutEffect.RedeemPromo("BIG50", newCart) in transition.effects)
+        assertEquals(PromoStatus.Redeeming("BIG50"), transition.state.promo.status)
+    }
+
+    @Test
     fun `emptying the cart clears shipping and blocks paying`() {
         val transition = reducer.reduce(readyState(), ContextAction.Updated(checkoutContext(cart = cartOf())))
 
@@ -88,6 +99,25 @@ class ContextReducerTest {
 
         assertEquals(HOME.id, transition.state.address.selectedId)
         assertTrue(CheckoutEffect.ValidateAddress(HOME.id) in transition.effects)
+    }
+
+    @Test
+    fun `a removed address and a cart change in one update ask for quotes only once`() {
+        val start = readyState().copy(
+            address = AddressSlice(OFFICE.id, Loadable.Ready(AddressValidation.Deliverable)),
+        )
+        val newCart = cartOf(MUG, TEE)
+
+        val transition = reducer.reduce(
+            start,
+            ContextAction.Updated(checkoutContext(addresses = listOf(HOME), cart = newCart)),
+        )
+
+        assertEquals(HOME.id, transition.state.address.selectedId)
+        assertEquals(
+            listOf(CheckoutEffect.LoadShippingQuotes(HOME.id, newCart)),
+            transition.effects.filterIsInstance<CheckoutEffect.LoadShippingQuotes>(),
+        )
     }
 
     @Test

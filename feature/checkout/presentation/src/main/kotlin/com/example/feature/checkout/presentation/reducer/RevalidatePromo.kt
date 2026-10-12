@@ -5,13 +5,16 @@ import com.example.core.mvi.withEffects
 import com.example.feature.checkout.presentation.contract.CheckoutEffect
 import com.example.feature.checkout.presentation.contract.CheckoutState
 import com.example.feature.checkout.presentation.contract.PromoStatus
-import com.example.feature.checkout.presentation.contract.appliedPromo
 import com.example.feature.checkout.presentation.contract.contextOrNull
 
-/** A discount depends on the cart, so an applied promo is checked again whenever the cart changes. */
+/** A discount depends on the cart, so a promo that is applied or still being checked is checked again whenever the cart changes. */
 internal fun CheckoutState.revalidatePromo(): CheckoutTransition {
-    val applied = appliedPromo ?: return only()
+    val code = when (val status = promo.status) {
+        is PromoStatus.Applied -> status.promo.code
+        is PromoStatus.Redeeming -> status.code
+        PromoStatus.None, is PromoStatus.Rejected -> return only()
+    }
     val cart = contextOrNull?.cart ?: return only()
-    return copy(promo = promo.copy(status = PromoStatus.Redeeming(applied.code)))
-        .withEffects(CheckoutEffect.RedeemPromo(applied.code, cart))
+    return copy(promo = promo.copy(status = PromoStatus.Redeeming(code)))
+        .withEffects(CheckoutEffect.RedeemPromo(code, cart))
 }
