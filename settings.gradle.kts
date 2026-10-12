@@ -32,3 +32,4 @@ rootProject.name = "checkout-mvi"
 include(":core:mvi")
 include(":core:domain")
 include(":feature:checkout:domain")
+include(":feature:checkout:data")
