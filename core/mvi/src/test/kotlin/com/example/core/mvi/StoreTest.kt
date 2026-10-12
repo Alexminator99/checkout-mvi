@@ -20,21 +20,21 @@ class StoreTest {
         data class Add(val amount: Int) : TestAction
         data class Fetch(val id: Int) : TestAction
         data class Fetched(val id: Int) : TestAction
-        data object Announce : TestAction
+        data class Announce(val message: String) : TestAction
     }
 
     private data class TestEffect(val id: Int) : KeyedEffect {
         override val cancelKey: Any get() = "fetch"
     }
 
-    private data class TestState(val total: Int = 0, val fetched: List<Int> = emptyList())
+    private data class TestState(val log: List<Int> = emptyList(), val fetched: List<Int> = emptyList())
 
     private val reducer = Reducer<TestState, TestAction, TestEffect, String> { state, action ->
         when (action) {
-            is TestAction.Add -> state.copy(total = state.total + action.amount).only()
+            is TestAction.Add -> state.copy(log = state.log + action.amount).only()
             is TestAction.Fetch -> state.withEffects(TestEffect(action.id))
             is TestAction.Fetched -> state.copy(fetched = state.fetched + action.id).only()
-            TestAction.Announce -> state.withEvent("hello")
+            is TestAction.Announce -> state.withEvent(action.message)
         }
     }
 
@@ -47,10 +47,12 @@ class StoreTest {
         val scope = storeScope()
         val store = Store(TestState(), scope, reducer) { emptyFlow() }
 
-        repeat(100) { store.dispatch(TestAction.Add(1)) }
+        store.dispatch(TestAction.Add(1))
+        store.dispatch(TestAction.Add(2))
+        store.dispatch(TestAction.Add(3))
         advanceUntilIdle()
 
-        assertEquals(100, store.state.value.total)
+        assertEquals(listOf(1, 2, 3), store.state.value.log)
         scope.cancel()
     }
 
@@ -94,10 +96,10 @@ class StoreTest {
         val store = Store(TestState(), scope, reducer) { emptyFlow() }
 
         store.events.test {
-            store.dispatch(TestAction.Announce)
-            store.dispatch(TestAction.Announce)
-            assertEquals("hello", awaitItem())
-            assertEquals("hello", awaitItem())
+            store.dispatch(TestAction.Announce("first"))
+            store.dispatch(TestAction.Announce("second"))
+            assertEquals("first", awaitItem())
+            assertEquals("second", awaitItem())
         }
         store.events.test {
             expectNoEvents()

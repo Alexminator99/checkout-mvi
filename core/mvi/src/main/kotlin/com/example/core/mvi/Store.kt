@@ -18,6 +18,10 @@ import kotlinx.coroutines.launch
  * report their results back as actions. Events are buffered without limit, so emitting one never
  * blocks the loop, and each event reaches one collector once.
  *
+ * Effect results are ordered relative to newer requests only on a single-threaded, immediate dispatcher
+ * such as the one behind `viewModelScope`. On a multi-threaded scope a stale result can be queued behind
+ * the request that replaced it.
+ *
  * Effect handlers own error translation: an exception escaping an effect is a bug and is not
  * caught here.
  */
