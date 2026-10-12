@@ -30,3 +30,4 @@ rootProject.name = "checkout-mvi"
 // Presentation never sees data. Only :app knows both, so only :app assembles the Hilt graph.
 
 include(":core:mvi")
+include(":core:domain")
