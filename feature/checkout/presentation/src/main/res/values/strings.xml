@@ -34,6 +34,7 @@
 
     <string name="checkout_section_summary">Summary</string>
     <string name="checkout_subtotal">Subtotal</string>
+    <string name="checkout_total">Total</string>
     <string name="checkout_shipping">Shipping</string>
     <string name="checkout_shipping_pending">Choose an option</string>
     <string name="checkout_discount">Discount</string>

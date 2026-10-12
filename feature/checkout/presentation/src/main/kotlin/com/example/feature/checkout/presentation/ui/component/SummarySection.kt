@@ -29,6 +29,11 @@ fun SummarySection(summary: SummaryUi, modifier: Modifier = Modifier) {
                 Text(text = row.value.asString(), style = MaterialTheme.typography.bodyLarge)
             }
         }
+        HorizontalDivider()
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(text = stringResource(R.string.checkout_total), style = MaterialTheme.typography.titleMedium)
+            Text(text = summary.total, style = MaterialTheme.typography.titleMedium)
+        }
     }
 }
 
