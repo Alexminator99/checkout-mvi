@@ -11,6 +11,9 @@ import java.io.IOException
 /**
  * The single place where exceptions become [CheckoutError]s.
  *
+ * Cancellation is rethrown. Any other unexpected exception becomes [CheckoutError.Unexpected] carrying only
+ * its type name, never its message, which may echo payload or personal data.
+ *
  * @param mapApiError the meaning of a status code for one endpoint (for example 410 on redeem means
  * the promo expired). When it returns null, [toCheckoutError] decides.
  */
@@ -25,6 +28,8 @@ internal suspend inline fun <T> safeCall(
     Outcome.Failure(mapApiError(e) ?: e.toCheckoutError())
 } catch (e: IOException) {
     Outcome.Failure(CheckoutError.Network)
+} catch (e: Exception) {
+    Outcome.Failure(CheckoutError.Unexpected(e::class.java.simpleName))
 }
 
 /** What a status code means when the endpoint gives it no specific meaning. */

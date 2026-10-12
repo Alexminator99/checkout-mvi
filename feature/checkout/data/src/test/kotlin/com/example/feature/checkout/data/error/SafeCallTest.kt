@@ -40,6 +40,13 @@ class SafeCallTest {
     }
 
     @Test
+    fun `an unexpected exception is a failure that names its type and never its message`() = runTest {
+        val outcome = safeCall<Int> { throw IllegalArgumentException("bad") }
+
+        assertEquals(Outcome.Failure(CheckoutError.Unexpected("IllegalArgumentException")), outcome)
+    }
+
+    @Test
     fun `cancellation is never swallowed`() {
         assertThrows(CancellationException::class.java) {
             runBlocking { safeCall<Int> { throw CancellationException("stopped") } }
