@@ -18,9 +18,8 @@ import kotlinx.coroutines.launch
  * report their results back as actions. Events are buffered without limit, so emitting one never
  * blocks the loop, and each event reaches one collector once.
  *
- * Effect results are ordered relative to newer requests only on a single-threaded, immediate dispatcher
- * such as the one behind `viewModelScope`. On a multi-threaded scope a stale result can be queued behind
- * the request that replaced it.
+ * Keyed results carry a generation checked by the loop, so replacing an effect also invalidates
+ * results that the previous generation already queued.
  *
  * Effect handlers own error translation: an exception escaping an effect is a bug and is not
  * caught here.
@@ -37,19 +36,24 @@ class Store<State, Action, Effect, Event>(
     private val _events = Channel<Event>(Channel.UNLIMITED)
     val events: Flow<Event> = _events.receiveAsFlow()
 
-    private val actions = Channel<Action>(Channel.UNLIMITED)
+    private data class QueuedAction<A>(val action: A, val key: Any? = null, val generation: Long = 0)
+
+    private val actions = Channel<QueuedAction<Action>>(Channel.UNLIMITED)
+    private val generations = HashMap<Any, Long>()
 
     // Touched only by the loop coroutine, so it needs no locking.
     private val runningKeyedEffects = HashMap<Any, Job>()
 
     init {
         scope.launch {
-            for (action in actions) reduce(action)
+            for (queued in actions) {
+                if (queued.key == null || generations[queued.key] == queued.generation) reduce(queued.action)
+            }
         }
     }
 
     fun dispatch(action: Action) {
-        actions.trySend(action)
+        actions.trySend(QueuedAction(action))
     }
 
     private fun reduce(action: Action) {
@@ -62,8 +66,10 @@ class Store<State, Action, Effect, Event>(
     private fun start(effect: Effect) {
         val key = (effect as? KeyedEffect)?.cancelKey
         key?.let { runningKeyedEffects.remove(it)?.cancel() }
+        val generation = key?.let { (generations[it] ?: 0L) + 1L } ?: 0L
+        key?.let { generations[it] = generation }
         val job = scope.launch {
-            effectHandler.handle(effect).collect { result -> dispatch(result) }
+            effectHandler.handle(effect).collect { result -> actions.trySend(QueuedAction(result, key, generation)) }
         }
         key?.let { runningKeyedEffects[it] = job }
     }

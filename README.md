@@ -2,6 +2,10 @@
 
 A proof of concept of an MVI architecture that keeps scaling. A checkout screen has eight sections that depend on each other: the cart, the address, shipping, the promo code, payment, the summary, placing the order and connectivity. Here each section's logic lives in small, pure, tested pieces, and the ViewModel stays the same size however much the screen grows.
 
+**Presenting this project?** Read the [complete presentation and rehearsal guide](PRESENTATION_GUIDE.md), including a 15-minute script, exact demo steps, code pointers, and answers to likely questions.
+
+![Checkout with a persistent payment bar](docs/images/checkout.png)
+
 The design and its reasoning are written up in the [design spec](docs/specs/2026-10-12-checkout-mvi-poc-design.md).
 
 ## Run it
@@ -29,7 +33,7 @@ The app talks to an in-memory demo backend with about 600 ms of latency, so it n
 | Card Mastercard •••• 0002 | Declined: a dialog explains it |
 | Card Amex •••• 3155 | The bank asks for confirmation |
 | Airplane mode | Offline banner, and Pay is disabled until the connection is back. The in-memory backend keeps answering while offline, so promo, address and shipping quotes still work; only paying is blocked |
-| Remove every item | Empty cart, no shipping options, Pay disabled. The in-memory cart refills only when the app process restarts |
+| Remove every item | Empty cart, no shipping options, Pay disabled. Use **Reset demo** at the top to restore the starting cart and clear selections and promo input |
 
 The demo customer is a member, so every shipping option except Express is free (Standard and Pickup point).
 
@@ -54,8 +58,8 @@ The demo customer is a member, so every shipping option except Express is free (
 | `CheckoutState` | The single source of truth, shaped like the domain |
 | `CheckoutIntent` | What the UI may send; a subset of `CheckoutAction` |
 | `CheckoutAction` | Everything the reducer handles: intents and effect results, grouped per section |
-| `CheckoutReducer` | Routes each action group to one pure slice reducer. While an order is being placed it ignores every intent, so new sections are frozen during payment automatically |
-| `CheckoutEffect` | A side effect as plain data; keyed effects are latest-wins |
+| `CheckoutReducer` | Routes each action group to one pure slice reducer. While an order is being placed it ignores every intent, while context updates are deferred, preserving the displayed order during payment |
+| `CheckoutEffect` | A side effect as plain data; keyed effects cancel older work and reject older queued result generations |
 | `CheckoutEffectHandler` | Runs an effect through one use case and reports the result as an action |
 | `CheckoutEvent` | A one-off signal (navigation, transient error), collected with `ObserveAsEvents` |
 | `CheckoutProjector` | Turns state into render-ready `CheckoutUiState`, one section projector per section |
@@ -93,9 +97,28 @@ The demo customer is a member, so every shipping option except Express is free (
 
 ## Tests
 
-`./gradlew test` runs 202 tests, all with hand-written fakes:
+`./gradlew test` runs 216 tests, all with hand-written fakes:
 
 - **Reducers and projectors** are plain functions, so their tests need no coroutines and no Android.
 - **Use cases** are tested over fakes of the repository interfaces, which live in the domain module's `testFixtures`.
 - **Repositories** are tested over the demo backend, covering every scripted error code.
 - **`CheckoutViewModelTest`** runs the whole loop: the real store, reducers, effect handler, use cases and projector over fakes.
+
+
+## Correctness and demo controls
+
+- Cart writes are acknowledged explicitly; Pay stays blocked until the committed cart is reconciled.
+- The displayed cart and selections are retained during payment. A failed payment reconciles the latest deferred context.
+- Editing the selected address under the same ID invalidates its delivery approval and shipping quotes.
+- Price conflicts refresh product prices before retry. Failed refreshes stay blocked and offer Retry.
+- Connectivity follows validated internet access, including capability changes.
+- Total and Pay stay visible while scrolling, with explanations when payment is unavailable.
+- **Reset demo** restores the original cart and starts the default validation flow again.
+
+Validate the project with:
+
+```bash
+./gradlew test assembleDebug lintDebug
+```
+
+The backend, card outcomes, and price catalog are simulations. This POC does not implement real charging, bank authentication, persistent checkout recovery, or a production payment protocol. See the presentation guide for the precise boundaries and tradeoffs.

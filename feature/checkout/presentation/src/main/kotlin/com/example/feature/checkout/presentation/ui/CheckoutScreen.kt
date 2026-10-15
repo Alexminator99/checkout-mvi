@@ -4,8 +4,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,6 +48,7 @@ import com.example.feature.checkout.presentation.projector.toUiText
 import com.example.feature.checkout.presentation.ui.component.AddressSection
 import com.example.feature.checkout.presentation.ui.component.BlockingErrorDialog
 import com.example.feature.checkout.presentation.ui.component.CartSection
+import com.example.feature.checkout.presentation.ui.component.CheckoutPaymentBar
 import com.example.feature.checkout.presentation.ui.component.ErrorState
 import com.example.feature.checkout.presentation.ui.component.OfflineBanner
 import com.example.feature.checkout.presentation.ui.component.PaymentSection
@@ -87,8 +91,14 @@ fun CheckoutScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    Scaffold(modifier = modifier, snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).imePadding()) {
+    Scaffold(
+        modifier = modifier.imePadding(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            if (state is CheckoutUiState.Content) CheckoutPaymentBar(state) { onIntent(OrderAction.PlaceClicked) }
+        },
+    ) { padding ->
+        Box(modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
             when (state) {
                 CheckoutUiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 is CheckoutUiState.Error -> ErrorState(
@@ -111,7 +121,19 @@ private fun CheckoutContent(state: CheckoutUiState.Content, onIntent: (CheckoutI
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        item(key = "title") { Text(text = stringResource(R.string.checkout_title), style = MaterialTheme.typography.headlineMedium) }
+        item(key = "title") {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.checkout_title),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+                TextButton(
+                    onClick = { onIntent(LifecycleAction.ResetDemoClicked) },
+                    enabled = state.demoResetEnabled,
+                ) { Text(stringResource(R.string.checkout_reset_demo)) }
+            }
+        }
         if (state.isOffline) {
             item(key = "offline") { OfflineBanner() }
         }
@@ -143,13 +165,15 @@ private fun CheckoutContent(state: CheckoutUiState.Content, onIntent: (CheckoutI
             PaymentSection(payment = state.payment, onSelect = { onIntent(PaymentAction.Selected(it)) })
         }
         item(key = "summary") { SummarySection(summary = state.summary) }
-        item(key = "pay") {
-            PlaceOrderButton(button = state.placeOrder, onClick = { onIntent(OrderAction.PlaceClicked) })
-        }
     }
 
     state.blockingError?.let { message ->
-        BlockingErrorDialog(message = message, onDismiss = { onIntent(OrderAction.ErrorDismissed) })
+        BlockingErrorDialog(
+            message = message,
+            onDismiss = { onIntent(OrderAction.ErrorDismissed) },
+            dismissEnabled = state.errorDismissEnabled,
+            retry = state.retryPriceRefresh,
+        )
     }
 }
 

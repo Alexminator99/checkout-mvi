@@ -8,6 +8,8 @@ import com.example.feature.checkout.domain.usecase.GetShippingQuotesUseCase
 import com.example.feature.checkout.domain.usecase.ObserveCheckoutContextUseCase
 import com.example.feature.checkout.domain.usecase.PlaceOrderUseCase
 import com.example.feature.checkout.domain.usecase.RedeemPromoUseCase
+import com.example.feature.checkout.domain.usecase.RefreshCartUseCase
+import com.example.feature.checkout.domain.usecase.ResetDemoUseCase
 import com.example.feature.checkout.domain.usecase.UpdateCartQuantityUseCase
 import com.example.feature.checkout.domain.usecase.ValidateAddressUseCase
 import com.example.feature.checkout.presentation.contract.AddressAction
@@ -15,13 +17,14 @@ import com.example.feature.checkout.presentation.contract.CartAction
 import com.example.feature.checkout.presentation.contract.CheckoutAction
 import com.example.feature.checkout.presentation.contract.CheckoutEffect
 import com.example.feature.checkout.presentation.contract.ContextAction
+import com.example.feature.checkout.presentation.contract.LifecycleAction
 import com.example.feature.checkout.presentation.contract.OrderAction
 import com.example.feature.checkout.presentation.contract.PromoAction
 import com.example.feature.checkout.presentation.contract.ShippingAction
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
 /**
  * The bridge between the pure reducers and the outside world: effect, then one use case call, then
@@ -34,15 +37,28 @@ internal class CheckoutEffectHandler @Inject constructor(
     private val getShippingQuotes: GetShippingQuotesUseCase,
     private val redeemPromo: RedeemPromoUseCase,
     private val placeOrder: PlaceOrderUseCase,
+    private val refreshCart: RefreshCartUseCase,
+    private val resetDemo: ResetDemoUseCase,
 ) : EffectHandler<CheckoutEffect, CheckoutAction> {
 
     override fun handle(effect: CheckoutEffect): Flow<CheckoutAction> = when (effect) {
         CheckoutEffect.ObserveContext ->
             observeCheckoutContext().map { outcome -> outcome.fold(ContextAction::Updated, ContextAction::Failed) }
 
+        CheckoutEffect.RefreshCart -> once(
+            call = { refreshCart() },
+            onSuccess = OrderAction::PricesRefreshed,
+            onFailure = OrderAction::PriceRefreshFailed,
+        )
+        CheckoutEffect.ResetDemo -> once(
+            call = { resetDemo() },
+            onSuccess = { LifecycleAction.DemoReset },
+            onFailure = LifecycleAction::DemoResetFailed,
+        )
+
         is CheckoutEffect.UpdateQuantity -> once(
             call = { updateCartQuantity(effect.sku, effect.quantity) },
-            onSuccess = { null }, // the cart stream reports the new cart
+            onSuccess = CartAction::Updated,
             onFailure = CartAction::UpdateFailed,
         )
 

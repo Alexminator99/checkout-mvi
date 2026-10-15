@@ -8,7 +8,7 @@ import com.example.feature.checkout.domain.rule.priceFor
 import com.example.feature.checkout.presentation.R
 import com.example.feature.checkout.presentation.contract.Loadable
 import com.example.feature.checkout.presentation.contract.availableShippingOptions
-import com.example.feature.checkout.presentation.contract.isPlacingOrder
+import com.example.feature.checkout.presentation.contract.isCheckoutLocked
 import com.example.feature.checkout.presentation.ui.model.SelectableRowUi
 import com.example.feature.checkout.presentation.ui.model.ShippingSectionUi
 import javax.inject.Inject
@@ -27,7 +27,7 @@ internal class ShippingSectionProjector @Inject constructor(private val money: M
                     subtitle = UiText.plural(R.plurals.checkout_delivery_days, option.estimatedDays, option.estimatedDays),
                     trailing = priceText(option, ready.context.customer),
                     selected = option.id == ready.state.shipping.selectedId,
-                    enabled = !ready.state.isPlacingOrder,
+                    enabled = !ready.state.isCheckoutLocked,
                 )
             },
         )

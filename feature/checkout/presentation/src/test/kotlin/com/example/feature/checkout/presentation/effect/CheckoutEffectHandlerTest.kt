@@ -51,8 +51,11 @@ class CheckoutEffectHandlerTest {
     }
 
     @Test
-    fun `a quantity write reports nothing because the cart stream does`() = runTest {
-        assertEquals(emptyList<CheckoutAction>(), results(CheckoutEffect.UpdateQuantity(MUG.sku, 3)))
+    fun `a quantity write reports the committed cart`() = runTest {
+        assertEquals(
+            listOf(CartAction.Updated(cartOf(MUG.copy(quantity = 3)))),
+            results(CheckoutEffect.UpdateQuantity(MUG.sku, 3)),
+        )
         assertEquals(3, environment.cart.cart.value.lines.single().quantity)
     }
 

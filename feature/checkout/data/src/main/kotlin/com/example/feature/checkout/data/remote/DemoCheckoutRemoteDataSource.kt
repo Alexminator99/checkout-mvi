@@ -7,12 +7,13 @@ import com.example.feature.checkout.data.remote.dto.OrderDto
 import com.example.feature.checkout.data.remote.dto.PaymentMethodDto
 import com.example.feature.checkout.data.remote.dto.PlaceOrderRequestDto
 import com.example.feature.checkout.data.remote.dto.PromoDto
+import com.example.feature.checkout.data.remote.dto.QuoteLineDto
 import com.example.feature.checkout.data.remote.dto.QuoteRequestDto
 import com.example.feature.checkout.data.remote.dto.RedeemPromoRequestDto
 import com.example.feature.checkout.data.remote.dto.ShippingOptionDto
-import kotlinx.coroutines.delay
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.delay
 
 /**
  * An in-memory backend with simulated latency and scripted outcomes, so the app runs end to end
@@ -28,6 +29,19 @@ internal class DemoCheckoutRemoteDataSource(private val latencyMillis: Long) : C
 
     private val placedOrders = ConcurrentHashMap<String, OrderDto>()
     private val nextOrderNumber = AtomicInteger(FIRST_ORDER_NUMBER)
+
+    override suspend fun refreshCart(
+        lines: List<QuoteLineDto>,
+    ): List<QuoteLineDto> = respond {
+        lines.map { line ->
+            val price = when (line.sku) {
+                "mug" -> 1200L
+                "tee" -> 2000L
+                else -> throw CheckoutApiException(HttpStatus.NOT_FOUND)
+            }
+            line.copy(unitPriceMinor = price, currency = DemoCheckoutData.CURRENCY)
+        }
+    }
 
     override suspend fun addresses(): List<AddressDto> = respond { DemoCheckoutData.addresses }
 

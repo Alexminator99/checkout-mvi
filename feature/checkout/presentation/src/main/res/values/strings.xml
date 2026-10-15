@@ -59,10 +59,23 @@
     <string name="error_payment_declined">Your payment was declined. Try another card.</string>
     <string name="error_payment_requires_action">Your bank needs you to confirm this payment.</string>
     <string name="error_out_of_stock">Some items just sold out.</string>
-    <string name="error_price_changed">Prices changed. We\'ve updated your total; please review it.</string>
+    <string name="error_price_changed">Prices changed. Please review your refreshed total before paying again.</string>
     <string name="error_generic">Something went wrong. Please try again.</string>
 
     <string name="confirmation_title">Order placed</string>
     <string name="confirmation_order_number">Order number %1$s</string>
     <string name="confirmation_back_to_checkout">Back to checkout</string>
+    <string name="checkout_reset_demo">Reset demo</string>
+    <string name="checkout_wait_cart">Updating your cart…</string>
+    <string name="checkout_wait_prices">Prices changed. Refreshing your cart…</string>
+    <string name="checkout_retry_prices">Prices could not be refreshed. Tap Retry to try again.</string>
+    <string name="checkout_wait_online">Connect to the internet to pay.</string>
+    <string name="checkout_wait_items">Add items before placing an order.</string>
+    <string name="checkout_wait_address">Checking delivery to your address…</string>
+    <string name="checkout_choose_address">Choose an address we can deliver to.</string>
+    <string name="checkout_wait_shipping">Updating shipping options…</string>
+    <string name="checkout_choose_shipping">Choose a shipping option to continue.</string>
+    <string name="checkout_wait_promo">Checking your discount…</string>
+    <string name="checkout_choose_payment">Choose a payment method to continue.</string>
+    <string name="checkout_review_error">Review the payment message before trying again.</string>
 </resources>

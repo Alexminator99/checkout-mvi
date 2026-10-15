@@ -14,6 +14,9 @@ internal sealed interface CheckoutEffect {
         override val cancelKey: Any get() = "context"
     }
 
+    data object RefreshCart : CheckoutEffect
+    data object ResetDemo : CheckoutEffect
+
     data class UpdateQuantity(val sku: String, val quantity: Int) : CheckoutEffect
 
     data class ValidateAddress(val addressId: String) : CheckoutEffect, KeyedEffect {

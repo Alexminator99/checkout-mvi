@@ -13,10 +13,10 @@ import com.example.feature.checkout.presentation.reducer.ShippingReducer
 internal fun checkoutReducer(): CheckoutReducer = CheckoutReducer(
     lifecycle = LifecycleReducer(),
     context = ContextReducer(),
-    cart = CartReducer(),
+    cart = CartReducer(ContextReducer()),
     address = AddressReducer(),
     shipping = ShippingReducer(),
     promo = PromoReducer(),
     payment = PaymentReducer(),
-    order = OrderReducer(),
+    order = OrderReducer(ContextReducer()),
 )

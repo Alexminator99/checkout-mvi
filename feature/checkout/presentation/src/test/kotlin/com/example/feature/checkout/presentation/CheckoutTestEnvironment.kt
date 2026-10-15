@@ -9,6 +9,8 @@ import com.example.feature.checkout.domain.fake.FakeOrderRepository
 import com.example.feature.checkout.domain.fake.FakePaymentMethodRepository
 import com.example.feature.checkout.domain.fake.FakePromoRepository
 import com.example.feature.checkout.domain.fake.FakeShippingRepository
+import com.example.feature.checkout.domain.usecase.RefreshCartUseCase
+import com.example.feature.checkout.domain.usecase.ResetDemoUseCase
 import com.example.feature.checkout.domain.usecase.GetShippingQuotesUseCase
 import com.example.feature.checkout.domain.usecase.ObserveCheckoutContextUseCase
 import com.example.feature.checkout.domain.usecase.PlaceOrderUseCase
@@ -36,5 +38,7 @@ internal class CheckoutTestEnvironment(
         getShippingQuotes = GetShippingQuotesUseCase(shipping),
         redeemPromo = RedeemPromoUseCase(promos),
         placeOrder = PlaceOrderUseCase(orders),
+        refreshCart = RefreshCartUseCase(cart),
+        resetDemo = ResetDemoUseCase(cart),
     )
 }

@@ -1,8 +1,11 @@
 package com.example.feature.checkout.presentation.projector
 
+import com.example.core.ui.UiText
+import com.example.feature.checkout.presentation.R
 import com.example.feature.checkout.presentation.contract.CheckoutState
 import com.example.feature.checkout.presentation.contract.Loadable
 import com.example.feature.checkout.presentation.contract.Submission
+import com.example.feature.checkout.presentation.contract.isCheckoutLocked
 import com.example.feature.checkout.presentation.ui.model.CheckoutUiState
 import javax.inject.Inject
 
@@ -35,7 +38,14 @@ internal class CheckoutProjector @Inject constructor(
                 payment = payment.project(ready),
                 summary = summaryUi,
                 placeOrder = placeOrderButton.project(state, summaryUi.total),
-                blockingError = (state.submission as? Submission.Failed)?.error?.toUiText(),
+                blockingError = when (state.priceRefresh) {
+                    Loadable.Loading -> UiText.res(R.string.checkout_wait_prices)
+                    is Loadable.Failed -> UiText.res(R.string.checkout_retry_prices)
+                    else -> (state.submission as? Submission.Failed)?.error?.toUiText()
+                },
+                errorDismissEnabled = state.priceRefresh !is Loadable.Loading,
+                retryPriceRefresh = state.priceRefresh is Loadable.Failed,
+                demoResetEnabled = !state.isCheckoutLocked && !state.isUpdatingCart,
             )
         }
     }

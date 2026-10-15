@@ -23,7 +23,7 @@ import org.junit.Test
 
 class OrderReducerTest {
 
-    private val reducer = OrderReducer()
+    private val reducer = OrderReducer(ContextReducer())
 
     @Test
     fun `paying sends exactly the order the customer sees`() {
@@ -64,7 +64,7 @@ class OrderReducerTest {
 
         val transition = reducer.reduce(submitting, OrderAction.Placed(Order("o-42")))
 
-        assertEquals(Submission.Idle, transition.state.submission)
+        assertEquals(Submission.Completed, transition.state.submission)
         assertEquals(listOf(CheckoutEvent.NavigateToConfirmation("o-42")), transition.events)
     }
 
@@ -84,6 +84,6 @@ class OrderReducerTest {
 
         val transition = reducer.reduce(submitting, OrderAction.Failed(CheckoutError.PriceChanged))
 
-        assertEquals(listOf(CheckoutEffect.LoadShippingQuotes(HOME.id, cartOf(MUG))), transition.effects)
+        assertEquals(listOf(CheckoutEffect.RefreshCart), transition.effects)
     }
 }

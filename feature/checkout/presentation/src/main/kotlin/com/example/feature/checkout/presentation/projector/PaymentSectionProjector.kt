@@ -2,7 +2,7 @@ package com.example.feature.checkout.presentation.projector
 
 import com.example.core.ui.UiText
 import com.example.feature.checkout.presentation.R
-import com.example.feature.checkout.presentation.contract.isPlacingOrder
+import com.example.feature.checkout.presentation.contract.isCheckoutLocked
 import com.example.feature.checkout.presentation.ui.model.PaymentSectionUi
 import com.example.feature.checkout.presentation.ui.model.SelectableRowUi
 import javax.inject.Inject
@@ -17,7 +17,7 @@ internal class PaymentSectionProjector @Inject constructor() {
                 subtitle = null,
                 trailing = null,
                 selected = method.id == ready.state.selectedPaymentId,
-                enabled = !ready.state.isPlacingOrder,
+                enabled = !ready.state.isCheckoutLocked,
             )
         },
     )

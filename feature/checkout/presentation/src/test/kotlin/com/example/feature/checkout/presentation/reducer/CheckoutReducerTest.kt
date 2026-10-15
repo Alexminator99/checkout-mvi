@@ -84,6 +84,6 @@ class CheckoutReducerTest {
 
         val offline = checkoutContext(isOnline = false)
         val updated = reducer.reduce(placingOrder, ContextAction.Updated(offline))
-        assertEquals(placingOrder.copy(context = Loadable.Ready(offline)), updated.state)
+        assertEquals(placingOrder.copy(context = Loadable.Ready(offline), deferredContext = offline), updated.state)
     }
 }

@@ -12,6 +12,10 @@ internal class InMemoryCartDataSource(initialLines: List<CartLineRecord> = DEMO_
 
     override fun observeLines(): Flow<List<CartLineRecord>> = lines.asStateFlow()
 
+    override suspend fun replaceLines(lines: List<CartLineRecord>) {
+        this.lines.value = lines.toList()
+    }
+
     override suspend fun updateQuantity(sku: String, quantity: Int): Boolean = edit(sku) { current ->
         current.map { if (it.sku == sku) it.copy(quantity = quantity) else it }
     }

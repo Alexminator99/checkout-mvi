@@ -15,6 +15,7 @@ import com.example.feature.checkout.presentation.contract.OrderAction
 import com.example.feature.checkout.presentation.contract.PaymentAction
 import com.example.feature.checkout.presentation.contract.PromoAction
 import com.example.feature.checkout.presentation.contract.ShippingAction
+import com.example.feature.checkout.presentation.contract.isCheckoutLocked
 import com.example.feature.checkout.presentation.contract.isPlacingOrder
 import javax.inject.Inject
 
@@ -39,8 +40,10 @@ internal class CheckoutReducer @Inject constructor(
 
     override fun reduce(state: CheckoutState, action: CheckoutAction): CheckoutTransition {
         // While the order is being placed every intent is dropped, so what is paid for is what the screen shows.
-        // Effect results are not intents, so the order's answer and context updates still arrive.
-        if (state.isPlacingOrder && action is CheckoutIntent) return state.only()
+        // Only order answers and deferred context updates may change a payment in flight.
+        if (state.isResettingDemo && action != LifecycleAction.DemoReset && action !is LifecycleAction.DemoResetFailed) return state.only()
+        if (state.isCheckoutLocked && action is CheckoutIntent) return state.only()
+        if (state.isPlacingOrder && action !is ContextAction && action !is OrderAction) return state.only()
         return when (action) {
             is LifecycleAction -> lifecycle.reduce(state, action)
             is ContextAction -> context.reduce(state, action)

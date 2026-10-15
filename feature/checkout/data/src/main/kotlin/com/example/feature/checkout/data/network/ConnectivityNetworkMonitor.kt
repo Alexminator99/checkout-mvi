@@ -6,12 +6,12 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import com.example.feature.checkout.domain.repository.NetworkMonitor
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
-import javax.inject.Inject
 
 /** The Android adapter behind [NetworkMonitor]: follows the device's default network. */
 internal class ConnectivityNetworkMonitor @Inject constructor(
@@ -21,8 +21,9 @@ internal class ConnectivityNetworkMonitor @Inject constructor(
     override val isOnline: Flow<Boolean> = callbackFlow {
         val manager = context.getSystemService(ConnectivityManager::class.java)
         val callback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                trySend(true)
+            override fun onCapabilitiesChanged(network: Network, capabilities: NetworkCapabilities) {
+                trySend(capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))
             }
 
             override fun onLost(network: Network) {
@@ -35,5 +36,8 @@ internal class ConnectivityNetworkMonitor @Inject constructor(
     }.conflate().distinctUntilChanged()
 
     private fun ConnectivityManager.hasInternet(): Boolean =
-        getNetworkCapabilities(activeNetwork)?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        getNetworkCapabilities(activeNetwork)?.let { capabilities ->
+            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        } == true
 }

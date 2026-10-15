@@ -17,4 +17,8 @@ internal data class CheckoutState(
     val promo: PromoSlice = PromoSlice(),
     val selectedPaymentId: String? = null,
     val submission: Submission = Submission.Idle,
+    val isUpdatingCart: Boolean = false,
+    val deferredContext: CheckoutContext? = null,
+    val priceRefresh: Loadable<Unit> = Loadable.Idle,
+    val isResettingDemo: Boolean = false,
 )

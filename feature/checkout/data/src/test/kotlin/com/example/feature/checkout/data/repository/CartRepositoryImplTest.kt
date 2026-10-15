@@ -12,7 +12,7 @@ import org.junit.Test
 
 class CartRepositoryImplTest {
 
-    private val repository = CartRepositoryImpl(InMemoryCartDataSource(), EUR)
+    private val repository = CartRepositoryImpl(InMemoryCartDataSource(), EUR, com.example.feature.checkout.data.remote.DemoCheckoutRemoteDataSource(0))
 
     @Test
     fun `the demo cart holds a mug and a T-shirt`() = runTest {
@@ -24,14 +24,16 @@ class CartRepositoryImplTest {
 
     @Test
     fun `setting a quantity updates the cart`() = runTest {
-        assertEquals(Outcome.Success(Unit), repository.setQuantity("mug", 3))
+        val result = repository.setQuantity("mug", 3)
+        assertEquals(Outcome.Success(repository.observeCart().first()), result)
 
         assertEquals(3, repository.observeCart().first().lines.first { it.sku == "mug" }.quantity)
     }
 
     @Test
     fun `removing a line drops it from the cart`() = runTest {
-        assertEquals(Outcome.Success(Unit), repository.removeLine("mug"))
+        val result = repository.removeLine("mug")
+        assertEquals(Outcome.Success(repository.observeCart().first()), result)
 
         assertEquals(listOf("tee"), repository.observeCart().first().lines.map { it.sku })
     }
@@ -41,4 +43,25 @@ class CartRepositoryImplTest {
         assertEquals(Outcome.Failure(CheckoutError.NotFound), repository.setQuantity("nope", 1))
         assertEquals(Outcome.Failure(CheckoutError.NotFound), repository.removeLine("nope"))
     }
+    @Test
+    fun `refresh replaces stale product prices while preserving quantities`() = runTest {
+        val source = InMemoryCartDataSource(listOf(
+            com.example.feature.checkout.data.local.CartLineRecord("mug", "Coffee mug", 9900, "EUR", 3),
+        ))
+        val cart = CartRepositoryImpl(source, EUR, com.example.feature.checkout.data.remote.DemoCheckoutRemoteDataSource(0))
+        val result = cart.refresh() as Outcome.Success
+        assertEquals(eur("36.00"), result.value.subtotal)
+        assertEquals(3, result.value.lines.single().quantity)
+        assertEquals(result.value, cart.observeCart().first())
+    }
+
+    @Test
+    fun `restoring the demo refills the original cart`() = runTest {
+        repository.removeLine("mug")
+        repository.removeLine("tee")
+        val result = repository.restoreDemoCart() as Outcome.Success
+        assertEquals(eur("44.00"), result.value.subtotal)
+        assertEquals(3, result.value.itemCount)
+    }
+
 }

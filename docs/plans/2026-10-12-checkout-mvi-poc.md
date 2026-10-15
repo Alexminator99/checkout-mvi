@@ -1,6 +1,6 @@
 # Checkout MVI POC Implementation Plan
 
-**Goal:** Rebuild the checkout prototype as a runnable, fully tested, multi-module Android POC that shows Betsson how plain MVI keeps scaling.
+**Goal:** Rebuild the checkout prototype as a runnable, fully tested, multi-module Android POC that demonstrates how plain MVI keeps scaling.
 
 **Architecture:** Each screen runs one `Store`, a single loop that reduces actions in order: a pure reducer returns a `Transition` (new state, effects to run, one-off events). An effect handler turns each effect into one use case call and reports the result back as an action. A projector turns state into render-ready UI state. The checkout feature is split into `domain` (pure Kotlin), `data` (demo backend) and `presentation` modules. Shared build configuration lives in convention plugins.
 
@@ -26,7 +26,7 @@
 - **No hard-coded user-facing strings in UI code.** Copy and content descriptions come from `strings.xml`; formatting goes through `UiText` and `MoneyFormatter`.
 - **Fakes only:** no mocking libraries. Fakes for domain repository interfaces live in `feature/checkout/domain/src/testFixtures`, one per file.
 - **Commits** use `type(scope): description` and are made only with the repository owner's approval.
-- **JDK:** commands assume a JDK 17+ on `JAVA_HOME`. Android Studio's bundled JBR works: `export JAVA_HOME="/Users/alexminator/Applications/Android Studio.app/Contents/jbr/Contents/Home"`.
+- **JDK:** commands assume a JDK 17+ on `JAVA_HOME`. Android Studio's bundled JBR works: `export JAVA_HOME="$(/usr/libexec/java_home)"`.
 
 ## Review Focus
 

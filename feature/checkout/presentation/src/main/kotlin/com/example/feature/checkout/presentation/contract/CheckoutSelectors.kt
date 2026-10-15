@@ -33,6 +33,9 @@ internal val CheckoutState.isAddressDeliverable: Boolean
 internal val CheckoutState.isPlacingOrder: Boolean
     get() = submission == Submission.Submitting
 
+internal val CheckoutState.isCheckoutLocked: Boolean
+    get() = isPlacingOrder || submission == Submission.Completed || isResettingDemo || priceRefresh is Loadable.Loading
+
 /**
  * The one definition of "ready to pay": the request to send, or null while anything is missing.
  * The order reducer uses it as its guard and the place-order button projector for its enabled state,
@@ -41,7 +44,7 @@ internal val CheckoutState.isPlacingOrder: Boolean
 internal fun CheckoutState.orderRequestOrNull(): OrderRequest? {
     val context = contextOrNull ?: return null
     if (!context.isOnline || context.cart.isEmpty) return null
-    if (isPlacingOrder) return null
+    if (submission != Submission.Idle || isUpdatingCart || priceRefresh is Loadable.Loading || priceRefresh is Loadable.Failed) return null
     if (promo.status is PromoStatus.Redeeming) return null
 
     val addressId = address.selectedId?.takeIf { isAddressDeliverable } ?: return null

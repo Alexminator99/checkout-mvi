@@ -20,7 +20,8 @@ class UpdateCartQuantityUseCaseTest {
 
     @Test
     fun `sets the requested quantity`() = runTest {
-        assertEquals(Outcome.Success(Unit), updateCartQuantity(MUG.sku, 3))
+        val result = updateCartQuantity(MUG.sku, 3)
+        assertEquals(Outcome.Success(cartRepository.cart.value), result)
         assertEquals(3, quantityOf(MUG.sku))
     }
 
@@ -44,4 +45,14 @@ class UpdateCartQuantityUseCaseTest {
 
         assertEquals(Outcome.Failure(CheckoutError.Network), updateCartQuantity(MUG.sku, 3))
     }
+    @Test
+    fun `returns the acknowledged cart even before observers publish it`() = runTest {
+        val committed = cartOf(MUG.copy(quantity = 4))
+        val repository = object : com.example.feature.checkout.domain.repository.CartRepository by cartRepository {
+            override suspend fun setQuantity(sku: String, quantity: Int) = Outcome.Success(committed)
+        }
+        assertEquals(Outcome.Success(committed), UpdateCartQuantityUseCase(repository)(MUG.sku, 4))
+        assertEquals(2, cartRepository.cart.value.lines.first().quantity)
+    }
+
 }

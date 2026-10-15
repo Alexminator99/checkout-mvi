@@ -1,12 +1,12 @@
 # Checkout MVI POC — Design
 
 **Date:** 2026-10-12
-**Status:** Draft for review
+**Status:** Implemented POC. This document records the original design; see [the presentation guide](../../PRESENTATION_GUIDE.md) for the current consistency rules and demo controls.
 **Baseline:** `4e6747c chore: import checkout MVI prototype`
 
 ## 1. Context and goal
 
-This is a proof of concept for Betsson. Their teams already use plain MVI. The POC shows an MVI architecture that keeps scaling as a screen, the number of features and the team grow, while still reading as ordinary MVI.
+This is a proof of concept for teams already using plain MVI. The POC shows an MVI architecture that keeps scaling as a screen, the number of features and the team grow, while still reading as ordinary MVI.
 
 The checkout screen is the vehicle. It is a good stress test because its sections depend on each other: changing the cart re-quotes shipping and re-checks the promo, picking an address re-validates it, and paying needs every section to be ready.
 

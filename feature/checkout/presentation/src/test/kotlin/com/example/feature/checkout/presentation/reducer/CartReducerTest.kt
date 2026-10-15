@@ -12,13 +12,13 @@ import org.junit.Test
 
 class CartReducerTest {
 
-    private val reducer = CartReducer()
+    private val reducer = CartReducer(ContextReducer())
 
     @Test
     fun `changing a quantity asks to write it and waits for the cart to change`() {
         val transition = reducer.reduce(readyState(), CartAction.QuantityChanged(MUG.sku, 3))
 
-        assertEquals(readyState(), transition.state)
+        assertEquals(readyState().copy(isUpdatingCart = true), transition.state)
         assertEquals(listOf(CheckoutEffect.UpdateQuantity(MUG.sku, 3)), transition.effects)
     }
 

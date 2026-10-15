@@ -18,5 +18,8 @@ sealed interface CheckoutUiState {
         val summary: SummaryUi,
         val placeOrder: PlaceOrderButtonUi,
         val blockingError: UiText?,
+        val errorDismissEnabled: Boolean = true,
+        val retryPriceRefresh: Boolean = false,
+        val demoResetEnabled: Boolean = true,
     ) : CheckoutUiState
 }

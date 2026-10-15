@@ -106,4 +106,20 @@ class StoreTest {
         }
         scope.cancel()
     }
+    @Test
+    fun `replacing an effect rejects a result already queued by its previous generation`() = runTest {
+        val scope = storeScope()
+        lateinit var store: Store<TestState, TestAction, TestEffect, String>
+        store = Store(TestState(), scope, reducer) { effect ->
+            flow {
+                if (effect.id == 1) store.dispatch(TestAction.Fetch(2))
+                emit(TestAction.Fetched(effect.id))
+            }
+        }
+        store.dispatch(TestAction.Fetch(1))
+        advanceUntilIdle()
+        assertEquals(listOf(2), store.state.value.fetched)
+        scope.cancel()
+    }
+
 }
